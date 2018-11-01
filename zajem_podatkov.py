@@ -65,11 +65,11 @@ def page_to_lines(page):
 
 def get_dict_from_line_block(block):
     '''iz vrstice (niza) vrne slovar s podatki'''
-    rx = re.compile(r'database/races/(.*?)">(?P<ime>.*?)</a><br>(?P<dirkalisce>.*?)\s'
-                    r'.*?class="(.*?)"(.*?)\s*(?P<drzava>[A-Z]{3})'
-                    r'.*?content=".*?">(?P<datum>.{10})'
-                    r'.*?database/championships/.*">(?P<prvenstvo>.*?)</a>'
-                    r'.*?database/drivers/.*">(?P<zmagovalec>.*?)</a>',
+    rx = re.compile(r'database/races/(.*?)">(?P<ime>.*?)</a><br>(?P<dirkalisce>.*?)\s*</td>.*?'
+                    r'class="(.*?)"(.*?)\s*(?P<drzava>[A-Z]{3}).*?'
+                    r'content=".*?">(?P<datum>.{10}).*?'
+                    r'database/championships/.*">(?P<prvenstvo>.*?)</a>.*?'
+                    r'database/drivers/.*">(?P<zmagovalec>.*?)</a>',
                     re.DOTALL)
     data = re.search(rx, block)
     line_dict = data.groupdict()
@@ -77,7 +77,7 @@ def get_dict_from_line_block(block):
 
 
 def lines_from_file(filename, directory):
-    '''iz strani potegne podatke in jih zapiše v slovar'''
+    '''iz strani potegne podatke in jih zapiše v seznam slovarjev'''
     page = read_file_to_string(filename, directory)
     blocks = page_to_lines(page)
     lines = [get_dict_from_line_block(block) for block in blocks]
@@ -103,5 +103,7 @@ def write_csv(fieldnames, rows, directory, filename):
 
 
 def write_lines_to_csv():
-    lines = lines_page()
+    lines = []
+    for stevilka in range (258):
+        lines += lines_page('dirke_{}.html'.format(str(stevilka)))
     write_csv(lines[0].keys(), lines, dirke_mapa, csv_filename)
