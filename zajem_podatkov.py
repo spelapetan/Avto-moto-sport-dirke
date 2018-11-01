@@ -8,9 +8,9 @@ dirke_fp_url = 'https://www.motorsportmagazine.com/database/races'
 #mapa:
 dirke_mapa = 'avto-moto dirke'
 # mapa za prvo stran:
-frontpage_filename = 'dirke_fp.html'
+frontpage_filename = "dirke_0.html"
 #csv datoteka:
-csv_filename = 'dirke.csv'
+csv_filename = "dirke.csv"
 
 
 def download_url_to_string(url):
@@ -19,7 +19,7 @@ def download_url_to_string(url):
     except requests.exceptions.ConnectionError:
         print("failed to connect to url " + url)
         return
-    if r.status_code == requests.codes.ok:
+    if r.status_code == requests.codes['ok']:
         return r.text
     else:
         print("failed to download url " + url)
@@ -34,10 +34,18 @@ def save_string_to_file(text, directory, filename):
     return None
 
 
-def save_frontpage():
-    text = download_url_to_string(dirke_fp_url)
-    save_string_to_file(text, dirke_mapa, frontpage_filename)
+def save_page():
+    text_fp = download_url_to_string(dirke_fp_url)
+    save_string_to_file(text_fp, dirke_mapa, frontpage_filename)
+    for stran in range(1, 258):
+        url_strani = dirke_fp_url + '?page=' + str(stran)
+        text = download_url_to_string(url_strani)
+        filename = 'dirke_' + str(stran) + '.html'
+        save_string_to_file(text, dirke_mapa, filename)
     return None
+
+
+##########################################################################
 
 
 def read_file_to_string(directory, filename):
@@ -45,3 +53,48 @@ def read_file_to_string(directory, filename):
     with open(path, 'r') as file_in:
         return file_in.read()
 
+
+def page_to_lines(page):
+    rx = re.compile(r'tr class=(.*?)</tr>',
+                    re.DOTALL)
+    lines = re.findall(rx, page)
+    return lines
+
+
+def get_dict_from_line_block(block):
+    rx = re.compile(r'href="(.*?)">(?P<ime>.*?)</a><br>(?P<dirkalisce>.*?)<td"'
+                    r'.*?class="(.*?)"(.*?)(?P<drzava>[A-Z]{3})<span'
+                    r'.*?content=".*?">(?P<datum>.{10})</span'
+                    r'.*?<a href="(.*?)">(?P<prvenstvo>.*?)</a>'
+                    r'.*?<a href="(.*?)">(?P<zmagovalec>.*?)</a>',
+                    re.DOTALL)
+    data = re.search(rx, block)
+    line_dict = data.groupdict()
+    return line_dict
+
+
+def lines_from_file(filename, directory):
+    page = read_file_to_string(filename, directory)
+    blocks = page_to_lines(page)
+    lines = [get_dict_from_line_block(block) for block in blocks]
+    return lines
+
+
+def lines_frontpage():
+    return lines_from_file(dirke_mapa, frontpage_filename)
+
+
+def write_csv(fieldnames, rows, directory, filename):
+    os.makedirs(directory, exist_ok=True)
+    path = os.path.join(directory, filename)
+    with open(path, 'w') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+    return None
+
+
+def write_lines_to_csv():
+    lines = lines_frontpage()
+    write_csv(lines[0].keys(), lines, dirke_mapa, csv_filename)
