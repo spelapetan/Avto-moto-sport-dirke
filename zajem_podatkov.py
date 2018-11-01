@@ -49,12 +49,14 @@ def save_page():
 
 
 def read_file_to_string(directory, filename):
+    ''' Vrne vsebino v nizu'''
     path = os.path.join(directory, filename)
     with open(path, 'r') as file_in:
         return file_in.read()
 
 
 def page_to_lines(page):
+    '''iz strani potegne vrstice (seznam nizov)'''
     rx = re.compile(r'tr class=(.*?)</tr>',
                     re.DOTALL)
     lines = re.findall(rx, page)
@@ -62,11 +64,12 @@ def page_to_lines(page):
 
 
 def get_dict_from_line_block(block):
-    rx = re.compile(r'href="(.*?)">(?P<ime>.*?)</a><br>(?P<dirkalisce>.*?)<td"'
-                    r'.*?class="(.*?)"(.*?)(?P<drzava>[A-Z]{3})<span'
-                    r'.*?content=".*?">(?P<datum>.{10})</span'
-                    r'.*?<a href="(.*?)">(?P<prvenstvo>.*?)</a>'
-                    r'.*?<a href="(.*?)">(?P<zmagovalec>.*?)</a>',
+    '''iz vrstice (niza) vrne slovar s podatki'''
+    rx = re.compile(r'database/races/(.*?)">(?P<ime>.*?)</a><br>(?P<dirkalisce>.*?)\s'
+                    r'.*?class="(.*?)"(.*?)\s*(?P<drzava>[A-Z]{3})'
+                    r'.*?content=".*?">(?P<datum>.{10})'
+                    r'.*?database/championships/.*">(?P<prvenstvo>.*?)</a>'
+                    r'.*?database/drivers/.*">(?P<zmagovalec>.*?)</a>',
                     re.DOTALL)
     data = re.search(rx, block)
     line_dict = data.groupdict()
@@ -74,14 +77,18 @@ def get_dict_from_line_block(block):
 
 
 def lines_from_file(filename, directory):
+    '''iz strani potegne podatke in jih zapiše v slovar'''
     page = read_file_to_string(filename, directory)
     blocks = page_to_lines(page)
     lines = [get_dict_from_line_block(block) for block in blocks]
     return lines
 
 
-def lines_frontpage():
-    return lines_from_file(dirke_mapa, frontpage_filename)
+def lines_page(stran):
+    return lines_from_file(dirke_mapa, stran)
+
+
+#######################################################################
 
 
 def write_csv(fieldnames, rows, directory, filename):
@@ -96,5 +103,5 @@ def write_csv(fieldnames, rows, directory, filename):
 
 
 def write_lines_to_csv():
-    lines = lines_frontpage()
+    lines = lines_page()
     write_csv(lines[0].keys(), lines, dirke_mapa, csv_filename)
