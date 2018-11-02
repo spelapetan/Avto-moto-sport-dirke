@@ -63,6 +63,14 @@ def page_to_lines(page):
     return lines
 
 
+def dirka_brez_zmagovalca(sez):
+    '''Če dirka nima zmagovalca ji nastavimo, da ni zmagovalca'''
+    for i in range(len(sez)):
+        if 'database/drivers/' not in sez[i]:
+            sez[i] += 'database/drivers/.">Ni zmagovalca</a>'
+    return sez
+
+
 def get_dict_from_line_block(block):
     '''iz vrstice (niza) vrne slovar s podatki'''
     rx = re.compile(r'database/races/(.*?)">(?P<ime>.*?)</a><br>(?P<dirkalisce>.*?)\s*</td>'
@@ -79,7 +87,7 @@ def get_dict_from_line_block(block):
 def lines_from_file(filename, directory):
     '''iz strani potegne podatke in jih zapiše v seznam slovarjev'''
     page = read_file_to_string(filename, directory)
-    blocks = page_to_lines(page)
+    blocks = dirka_brez_zmagovalca(page_to_lines(page))
     lines = [get_dict_from_line_block(block) for block in blocks]
     return lines
 
