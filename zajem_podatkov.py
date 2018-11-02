@@ -7,6 +7,8 @@ import csv
 dirke_fp_url = 'https://www.motorsportmagazine.com/database/races'
 #mapa:
 dirke_mapa = 'avto-moto dirke'
+#mapa csv-jev:
+dirke_mapa_csv = 'avto-moto dirke csvji'
 # mapa za prvo stran:
 frontpage_filename = "dirke_0.html"
 #csv datoteka:
@@ -115,3 +117,11 @@ def write_lines_to_csv():
     for stevilka in range (258):
         lines += lines_page('dirke_{}.html'.format(str(stevilka)))
     write_csv(lines[0].keys(), lines, dirke_mapa, csv_filename)
+
+
+def write_lines_to_csv_ij(i=0, j=258):
+    '''Enaka funkcija kot zgoraj, le da lahko naredi tudi manjše csvje, za lepši pregled'''
+    lines = []
+    for stevilka in range (i, j):
+        lines += lines_page('dirke_{}.html'.format(str(stevilka)))
+    write_csv(lines[0].keys(), lines, dirke_mapa_csv, 'dirke_{0}-{1}.csv'.format(i, j))
