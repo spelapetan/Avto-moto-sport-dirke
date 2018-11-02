@@ -65,7 +65,7 @@ def page_to_lines(page):
     return lines
 
 
-def dirka_brez_zmagovalca(sez):
+def race_without_a_winner(sez):
     '''Če dirka nima zmagovalca ji nastavimo, da ni zmagovalca'''
     for i in range(len(sez)):
         if 'database/drivers/' not in sez[i]:
@@ -89,7 +89,7 @@ def get_dict_from_line_block(block):
 def lines_from_file(filename, directory):
     '''iz strani potegne podatke in jih zapiše v seznam slovarjev'''
     page = read_file_to_string(filename, directory)
-    blocks = dirka_brez_zmagovalca(page_to_lines(page))
+    blocks = race_without_a_winner(page_to_lines(page))
     lines = [get_dict_from_line_block(block) for block in blocks]
     return lines
 
