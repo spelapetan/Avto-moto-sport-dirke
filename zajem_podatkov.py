@@ -9,6 +9,8 @@ dirke_fp_url = 'https://www.motorsportmagazine.com/database/races'
 dirke_mapa = 'avto-moto dirke'
 #mapa csv-jev:
 dirke_mapa_csv = 'avto-moto dirke csvji'
+# mapa obdelanih podatkov:
+obdelani_podatki = 'avto-moto dirke obdelani podatki'
 # mapa za prvo stran:
 frontpage_filename = "dirke_0.html"
 #csv datoteka:
@@ -94,6 +96,20 @@ def lines_from_file(filename, directory):
     return lines
 
 
+def part_lines_from_file(filename, directory, a, b):
+    '''vzamemo samo po par željenih podatkov (npr. samo dirkališče in dirkača)'''
+    page = read_file_to_string(filename, directory)
+    blocks = race_without_a_winner(page_to_lines(page))
+    lines = []
+    for block in blocks:
+        podatki = get_dict_from_line_block(block)
+        potrebni = {}
+        potrebni[a] = podatki[a]
+        potrebni[b] = podatki[b]
+        lines.append(potrebni)
+    return lines
+
+
 def lines_page(stran):
     return lines_from_file(dirke_mapa, stran)
 
@@ -125,3 +141,10 @@ def write_lines_to_csv_ij(i=0, j=258):
     for stevilka in range (i, j):
         lines += lines_page('dirke_{}.html'.format(str(stevilka)))
     write_csv(lines[0].keys(), lines, dirke_mapa_csv, 'dirke_{0}-{1}.csv'.format(i, j))
+
+
+def write_lines_to_csv_izbrani_podatki(a, b):
+    lines = []
+    for stevilka in range (258):
+        lines += part_lines_from_file(dirke_mapa, 'dirke_{}.html'.format(str(stevilka)), a, b)
+    write_csv(lines[0].keys(), lines, obdelani_podatki, '{0}-{1}.csv'.format(a, b))
