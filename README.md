@@ -12,7 +12,8 @@ Za vsako dirko bom zajela:
 
 Delovne hipoteze:
 * V kateri državi je potekalo največ dirk določenih tekmovalnih razredov?
-* Kdo so najuspešnejši dirkači v določenih obdobjih?
+* Priljubljenost dirk v posameznih letih.
+* Kdateri so najuspešnejši dirkači?
 * Ali je kakšna povezava med zmagovalci in dirkališči (so nekateri dirkači res bolj uspešni na določenih stezah)?
 
 V mapi 'avto-moto dirke' so shranje vse spletne strani, iz katerih sem črpala podatke. Shranjna pa je tudi csv datoteka, ki vsebuje podatke iz vseh shranjenih strani. V mapi 'avto_moto dirke obdelani podatki' so dodane še csv datoteke z obdelanimi podatki, potrebni za analizo.
