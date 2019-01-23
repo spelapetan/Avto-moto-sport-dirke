@@ -79,7 +79,7 @@ def get_dict_from_line_block(block):
     '''iz vrstice (niza) vrne slovar s podatki'''
     rx = re.compile(r'database/races/(.*?)">(?P<ime>.*?)</a><br>(?P<dirkalisce>.*?)\s*</td>'
                     r'.*?class="(.*?)"(.*?)\s*(?P<drzava>[A-Z]{3})'
-                    r'.*?content=".*?">(?P<datum>.{10})<'
+                    r'.*?content=".*?">../../(?P<leto>.{4})<'
                     r'.*?database/championships/.*">(?P<prvenstvo>.*?)</a>'
                     r'.*?database/drivers/.*">(?P<zmagovalec>.*?)</a>',
                     re.DOTALL)
@@ -132,7 +132,7 @@ def write_lines_to_csv():
     lines = []
     for stevilka in range (258):
         lines += lines_page('dirke_{}.html'.format(str(stevilka)))
-    write_csv(lines[0].keys(), lines, dirke_mapa, csv_filename)
+    write_csv(lines[0].keys(), lines, dirke_mapa_csv, csv_filename)
 
 
 def write_lines_to_csv_ij(i=0, j=258):
